@@ -2,7 +2,9 @@
 pragma solidity 0.8.11;
 
 import "forge-std/Test.sol";
-import "../src/expirableNFT.sol";
+import "../src/ExpirableNFT.sol";
+
+import "../src/ExpireNFT.sol";
 
 contract ExpirableNFTTest is Test {
     ExpirableNFT public expirableNFT;
