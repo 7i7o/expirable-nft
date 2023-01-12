@@ -28,7 +28,7 @@ contract ExpireNFTv4 is ERC721, ERC721Enumerable, ERC721Burnable, AccessControl 
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
 
-        require(!_exists(tokenId), "ExpireNFTv3: invalid token ID");
+        require(!_exists(tokenId), "ExpireNFTv4: invalid token ID");
 
         _safeMint(to, tokenId);
 
@@ -36,11 +36,21 @@ contract ExpireNFTv4 is ERC721, ERC721Enumerable, ERC721Burnable, AccessControl 
     }
 
     function addOneYearOfSubscription(uint256 tokenId) public payable {
-        require(!_exists(tokenId), "ExpireNFTv4: invalid token ID");
+        require(_exists(tokenId), "ExpireNFTv4: invalid token ID");
         require(ownerOf(tokenId) == msg.sender, "ExpireNFTv4: not the owner");
         require(msg.value == SUBSCRIPTION_PRICE, "ExpireNFTv4: not the owner");
 
-        expireTime[tokenId] = block.timestamp + EXPIRE_TIME_IN_SECONDS;
+        // expireTime[tokenId] = block.timestamp + EXPIRE_TIME_IN_SECONDS;
+
+        uint256 previousExpireTime = expireTime[tokenId];
+
+        if (previousExpireTime > block.timestamp) {
+            // NFT Expires in the future
+            expireTime[tokenId] = previousExpireTime + EXPIRE_TIME_IN_SECONDS;
+        } else {
+            // NFT is expired
+            expireTime[tokenId] = block.timestamp + EXPIRE_TIME_IN_SECONDS;
+        }
     }
 
     function tokenURI(uint256 tokenId)
@@ -111,4 +121,6 @@ contract ExpireNFTv4 is ERC721, ERC721Enumerable, ERC721Burnable, AccessControl 
         return super.supportsInterface(interfaceId);
     }
 }
+
+// Thirdweb: https://thirdweb.com/goerli/0x277c8D16d9f7597A70A61533e76e3B4977a1c0dB/
 
