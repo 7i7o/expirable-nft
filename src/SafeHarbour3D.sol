@@ -2,13 +2,12 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
-contract ExpireNFTv4 is ERC721, ERC721Burnable, AccessControl {
+contract SafeHarbour3D is ERC721, ERC721Burnable, AccessControl {
     using Counters for Counters.Counter;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -19,16 +18,20 @@ contract ExpireNFTv4 is ERC721, ERC721Burnable, AccessControl {
 
     mapping(uint256 => uint256) public expireTime;
 
-    constructor() ERC721("ExpireNFTv4", "EXPD4") {
+    constructor() ERC721("SafeHarbour3D", "SAFE3") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
+    }
+
+    function totalSupply() public view returns (uint256) {
+    return _tokenIdCounter.current();
     }
 
     function safeMint(address to) public onlyRole(MINTER_ROLE) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
 
-        require(!_exists(tokenId), "ExpireNFTv4: invalid token ID");
+        require(!_exists(tokenId), "SafeHarbour3D: invalid token ID");
 
         _safeMint(to, tokenId);
 
@@ -36,9 +39,9 @@ contract ExpireNFTv4 is ERC721, ERC721Burnable, AccessControl {
     }
 
     function addOneYearOfSubscription(uint256 tokenId) public payable {
-        require(_exists(tokenId), "ExpireNFTv4: invalid token ID");
-        require(ownerOf(tokenId) == msg.sender, "ExpireNFTv4: not the owner");
-        require(msg.value == SUBSCRIPTION_PRICE, "ExpireNFTv4: not the owner");
+        require(_exists(tokenId), "SafeHarbour3D: invalid token ID");
+        require(ownerOf(tokenId) == msg.sender, "SafeHarbour3D: not the owner");
+        require(msg.value == SUBSCRIPTION_PRICE, "SafeHarbour3D: not the owner");
 
         // expireTime[tokenId] = block.timestamp + EXPIRE_TIME_IN_SECONDS;
 
@@ -72,8 +75,8 @@ contract ExpireNFTv4 is ERC721, ERC721Burnable, AccessControl {
                             name(),
                             " #",
                             Strings.toString(tokenId),
-                            '", "description": "ExpireNFTv4 collection",'
-                            '"image": "https://gateway.pinata.cloud/ipfs/QmPGMhzeYwjT1Rr4mkx5nVtuaQTFYDAQMi7f9FfVJHYpPe","attributes":[{"trait_type":"Expired","value":"true"}]}'
+                            '", "description": "SafeHarbour3D collection",'
+                            '"image": "https://gateway.pinata.cloud/ipfs/QmbDa2gvDrXnb31N4xsAPtARpNsAY4MCcBcuAPyz3t3wab","attributes":[{"trait_type":"Expired","value":"true"}]}'
                         )
                     )
                 )
@@ -91,7 +94,7 @@ contract ExpireNFTv4 is ERC721, ERC721Burnable, AccessControl {
                             name(),
                             " #",
                             Strings.toString(tokenId),
-                            '", "description": "ExpireNFTv4 collection",'
+                            '", "description": " collection",'
                             '"image": "https://gateway.pinata.cloud/ipfs/QmaX61W1rbRquMzGjWs4CKFXtRjYhHEsNdtXGV45QZQ7nV","attributes":[{"trait_type":"Expired","value":"false"}]}'
                         )
                     )
@@ -131,4 +134,5 @@ contract ExpireNFTv4 is ERC721, ERC721Burnable, AccessControl {
 // Thirdweb: https://thirdweb.com/goerli/0x277c8D16d9f7597A70A61533e76e3B4977a1c0dB/
 
 // Optimism Thirdweb: https://thirdweb.com/optimism/0xC2E94C207E9838e0d91692D81956A194dC51FCF5/explorer
+
 
